@@ -1,7 +1,7 @@
 use std::env;
 use std::fs;
-use std::io::Write;
 
+const IGNORED_FILES: [&str; 3] = [".cr", ".git", ".gitignore"];
 fn main() {
     let args: Vec<String> = env::args().collect();
     let command = &args[1];
@@ -23,8 +23,13 @@ fn main() {
 
         for entry in entries {
             let entry = entry.unwrap();
-            println!("{}", entry.file_name().into_string().unwrap());
-            files.push(entry.file_name().into_string().unwrap());
+
+            let filename = entry.file_name().into_string().unwrap();
+            if IGNORED_FILES.contains(&filename.as_str()) {
+                continue;
+            }
+
+            files.push(filename);
         }
 
         let stagged_files = files.join(",");
